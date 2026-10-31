@@ -88,6 +88,12 @@ function applyCmsOverrides(path){
   const floating=document.querySelector('.floating-wa');if(floating)floating.href=`https://wa.me/${waNumber}?text=${encodeURIComponent('Halo Easy Creative Tours, saya ingin berkonsultasi.')}`;
  }
  const seo=seoContent[path];if(seo?.is_published){if(seo.page_title)document.title=seo.page_title;if(seo.meta_description)document.querySelector('meta[name="description"]').content=seo.meta_description;document.querySelector('meta[property="og:title"]').content=seo.page_title||document.title;document.querySelector('meta[property="og:description"]').content=seo.meta_description||document.querySelector('meta[name="description"]').content;const image=safeWebUrl(seo.open_graph_image);if(image)document.querySelector('meta[property="og:image"]').content=image;const canonical=safeWebUrl(seo.canonical_url);document.querySelector('link[rel="canonical"]').href=canonical||location.origin+path;document.querySelector('meta[property="og:url"]').content=canonical||location.origin+path}
+ const socialTitle=document.querySelector('meta[property="og:title"]')?.content||document.title;
+ const socialDescription=document.querySelector('meta[property="og:description"]')?.content||document.querySelector('meta[name="description"]')?.content||'';
+ const socialImage=document.querySelector('meta[property="og:image"]')?.content||'';
+ const twitterTitle=document.querySelector('meta[name="twitter:title"]');if(twitterTitle)twitterTitle.content=socialTitle;
+ const twitterDescription=document.querySelector('meta[name="twitter:description"]');if(twitterDescription)twitterDescription.content=socialDescription;
+ const twitterImage=document.querySelector('meta[name="twitter:image"]');if(twitterImage)twitterImage.content=socialImage;
 }
 
 async function startApp(){if(location.pathname.startsWith('/admin')){await import('./admin.js');return}try{const content=await loadPublishedContent();if(content){services=content.services??services;destinations=content.destinations??destinations;products=content.products??products;portfolio=content.portfolio??portfolio;homepageContent={...homepageContent,...(content.settings.homepage||{})};aboutContent=content.settings.about||{};contactContent=content.settings.contact||{};homepageSections=content.sections||[];seoContent=content.seo||{};catList=[...new Set(products.flatMap(item=>item.categories||[item.category]).filter(Boolean))]}}catch(error){console.warn('Published CMS content could not be loaded; using the existing website content.',error)}render()}
