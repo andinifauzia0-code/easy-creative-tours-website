@@ -36,6 +36,10 @@ Logo asli Easy Creative Tours tersedia di `public/assets/brand/easy-creative-tou
 
 Saat domain resmi tersedia, atur domain proyek di Vercel. Host kanonis dan sitemap untuk deployment berikutnya mengikuti host produksi Vercel secara otomatis. Jam operasional dan alamat lokasi belum ditampilkan sebagai fakta karena belum diverifikasi.
 
+## Admin CMS
+
+Dashboard CMS tersedia di `/admin` dan login di `/admin/login`. Integrasi Supabase tetap tertutup sampai project dan variabel publiknya disiapkan. Jalankan migrasi dan undang administrator sesuai [panduan setup CMS](docs/CMS_SETUP.md). Jangan menaruh service-role key di browser atau repository.
+
 ### Menghubungkan domain resmi nanti
 
 1. Buka **Vercel Dashboard → Project → Settings → Domains** dan tambahkan domain yang sudah dimiliki perusahaan.

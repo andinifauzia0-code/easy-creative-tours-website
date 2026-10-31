@@ -2,8 +2,10 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readProjectEnv } from './env.mjs';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
+const localEnv = await readProjectEnv();
 const mime = { '.html':'text/html; charset=utf-8', '.css':'text/css; charset=utf-8', '.js':'text/javascript; charset=utf-8', '.xml':'application/xml; charset=utf-8', '.txt':'text/plain; charset=utf-8', '.svg':'image/svg+xml' };
 const server = createServer(async (req, res) => {
   const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
@@ -11,7 +13,12 @@ const server = createServer(async (req, res) => {
   let file = normalize(join(root, relativePath));
   if (!file.startsWith(root)) { res.writeHead(403).end('Forbidden'); return; }
   try {
-    const content = await readFile(file);
+    const content = pathname === '/cms-config.js'
+      ? Buffer.from(`window.ECT_CMS_CONFIG = Object.freeze(${JSON.stringify({
+          supabaseUrl: process.env.SUPABASE_URL || process.env.PUBLIC_SUPABASE_URL || localEnv.SUPABASE_URL || '',
+          supabasePublishableKey: process.env.SUPABASE_PUBLISHABLE_KEY || process.env.PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.PUBLIC_SUPABASE_ANON_KEY || localEnv.SUPABASE_PUBLISHABLE_KEY || localEnv.SUPABASE_ANON_KEY || '',
+        })});\n`)
+      : await readFile(file);
     const body = ['/robots.txt', '/sitemap.xml'].includes(pathname)
       ? content.toString('utf8').replaceAll('__SITE_ORIGIN__', `http://${req.headers.host || 'localhost:3000'}`)
       : content;
